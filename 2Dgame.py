@@ -27,19 +27,35 @@ class Ball(spgl.Sprite):
 		spgl.Sprite.__init__(self, shape, color, x, y)
 		self.setheading(0)
 		self.speed = 0
+		self.state = "ready"
+		self.dx = 15
+		self.dy = 0
 		
 	def shoot(self):
-		self.speed += 15
-
+		self.state = "firing"
+			
 	def tick(self):
-		self.fd(self.speed)
-		
+		if self.state == "firing":
+	
+			self.goto(self.xcor() + self.dx, self.ycor() + self.dy)
+			
+			if self.ycor() > 290:
+				self.sety(290)
+				self.left(90)
+			if self.ycor() < -290:
+				self.sety(-290)
+				self.left(180)	
+			if self.xcor() < -550:
+				self.setx(-290)
+				self.left(180)	
+			
 	def rotate_up(self):
-		self.left(10)
+		if self.state == "ready":
+			self.left(10)
 		
 	def rotate_down(self):
-		self.right(10)
-		
+		if self.state == "ready":
+			self.right(10)
 
 
 		
@@ -50,10 +66,10 @@ class Obstacle(spgl.Sprite):
 	def __init__(self, shape, color, x, y):
 		spgl.Sprite.__init__(self, shape, color, x, y)
 		self.setheading(90)
+		self.speed = 0
 	
 	def tick(self):
-		global number
-		self.fd(0)
+		self.fd(5)
 		
 		if self.xcor() > 530:
 			self.setx(530)
@@ -68,8 +84,9 @@ class Obstacle(spgl.Sprite):
 			self.sety(-290)
 			self.left(180)	
 
-
-
+	def speedup(self):
+		self.fd += 10
+	
 		
 # Create Functions
 # Initial Game setup
@@ -81,12 +98,23 @@ game = spgl.Game(1100, 600, "black", "Uhhh Uhhh...Get It Across", 0)
 # Create Sprites
 player = Player("triangle", "white", -500, 0)
 ball = Ball("circle", "yellow", -470, 0)
-obstacle = Obstacle("square", "red", 0, 0)
-obstacle_2 = Obstacle("square", "red", 500, 0)
-obstacle_3 = Obstacle("square", "red", 250, 0)
+obstacle_1 = Obstacle("square", "red", 0, 100)
+obstacle_2 = Obstacle("square", "red", 500, 300)
+obstacle_3 = Obstacle("square", "red", 250, -200)
 			
+# sprite_name.set_image("image_name.gif", width, height)
+obstacle_1.set_image("brick.gif", 70, 100)
+obstacle_2.set_image("brick.gif", 70, 100)
+obstacle_3.set_image("brick.gif", 70, 100)
+player.set_image("MainGuySpriteSheet.gif", 65, 65)
+
+# player.set_image("
+
+obstacles = [obstacle_1, obstacle_2, obstacle_3]
+
 # Create Labels
-label_score = spgl.Label("Score: 0", "white", -525, 270)  
+label_score = spgl.Label("Score: 0", "white", -525, 270)
+#label_score.size_font_size(20) 
 
 label_lives = spgl.Label("Lives left: 5", "white", -525, 250)  
 
@@ -108,26 +136,21 @@ while True:
 		player.score += 10
 		ball.goto(-470, 0)
 		ball.speed = 0
+		ball.state = "ready"
 		label_score.update("Score: {}".format(player.score))
 
-	if game.is_circle_collision(ball, obstacle, 20):
-		player.lives -= 1 
-		print("You lost a life")
-		ball.goto(-470, 0)
-		ball.speed = 0
-		label_lives.update("Lives: {}".format(player.lives))
+
+	for obstacle in obstacles:
+		if game.is_collision(ball, obstacle):
+			player.lives -= 1 
+			print("You lost a life")
+			ball.goto(-470, 0)
+			ball.speed = 0
+			ball.state = "ready"
+			label_lives.update("Lives: {}".format(player.lives))
 		
 		
-		
-	if game.is_circle_collision(ball, obstacle_2, 20):
-		player.lives -= 1 
-		print("You lost a life")
-		ball.goto(-470, 0)
-		ball.speed = 0
-		#play sound
-		
-	if game.is_circle_collision(ball, obstacle_3, 20):
-		pass 
+
 		
 	
 	
