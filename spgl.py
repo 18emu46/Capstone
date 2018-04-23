@@ -1,4 +1,4 @@
-# Simple Python Game Library Version 0.8.3 by /u/wynand1004 AKA @TokyoEdTech
+# Simple Python Game Library Version 0.8.5.4 by /u/wynand1004 AKA @TokyoEdTech
 # Documentation on Github: https://wynand1004.github.io/SPGL
 # Python 2.x and 3.x Compatible
 
@@ -424,7 +424,7 @@ class Sprite(turtle.Turtle):
                 Game.logs.append("Warning: {} file missing from disk.".format(image))
 
                 # Set placeholder shape
-                shape = "square"
+                image = "square"
                 width = 20 # This is the default for turtle module primitives
                 height = 20 # This is the default for turtle module primitives
 
@@ -435,8 +435,25 @@ class Sprite(turtle.Turtle):
         # Click binding needs to be set again after image change
         self.onclick(self.click)
 
+    def set_bounding_box(self, height, width):
+        self.width = width
+        self.height = height
+
     def click(self, x, y):
         print ("The sprite was clicked at ({},{})".format(x, y))
+
+    def rotate_left(self, degrees):
+        self.lt(degrees)
+		
+    def rotate_right(self, degrees):
+        self.rt(degrees)
+		
+    def go_forward(self, distance):
+        self.fd(distance)
+		
+    def go_backward(self, distance):
+        self.fd(-distance)
+		
 
 #Label Class
 class Label(turtle.Turtle):
@@ -455,12 +472,14 @@ class Label(turtle.Turtle):
         self.penup()
         self.goto(x, y)
         self.color(color)
+        self.font_name = font_name
+        self.font_size = font_size
+        self.font_type = font_type
         self.font = (font_name, font_size, font_type)
         self.align = align
 
         # Attributes
         self.text = text
-
 
         # Append to master label list
         Game.labels.append(self)
@@ -472,6 +491,20 @@ class Label(turtle.Turtle):
     def update(self, text):
         self.text = text
         self.tick()
+        
+    def set_font_name(self, font_name):
+        self.font_name = font_name
+        self.font = (self.font_name, self.font_size, self.font_type)
+
+    def set_font_size(self, font_size):
+        self.font_size = font_size
+        self.font = (self.font_name, self.font_size, self.font_type)
+        
+    def set_font_type(self, font_type):
+        self.font_type = font_type
+        self.font = (self.font_name, self.font_size, self.font_type)
+    
+
 
 #Button Class
 class Button(turtle.Turtle):
